@@ -47,26 +47,38 @@ module AliyunSlsSdk
 
     end
 
-
+    # 这里接受参数
+    # (project=nil, logstore=nil, topic=nil, source=nil, logitems=nil, hashKey = nil, compress = false)
+    # 其中 logitems = [{timestamp: Time.now.to_i, contents: [['aaa', '111'], ['ccc', 222]]}]
+    # 
     def put_logs(request)
       if request.logitems.length > 4096
-        raise AliyunSls::PostBodyTooLarge, "log item is larger than 4096"
+        raise AliyunSlsSdk::PostBodyTooLarge, "log item is larger than 4096"
       end
       logGroup = Protobuf::LogGroup.new(:logs => [])
       logGroup.topic = request.topic
       logGroup.source = request.source
       request.logitems.each { |logitem|
-        log = Protobuf::Log.new(:time => logitem.timestamp, :contents => [])
-        logGroup.logs << log
-        contents = logitem.contents
-        contents.each { |k, v|
-          content = Protobuf::Log::Content.new(:key => k, :value => v)
+        # log = Protobuf::Log.new(:time => logitem.timestamp, :contents => [])
+        # logGroup.logs << log
+        # contents = logitem.contents
+        # contents.each { |k, v|
+        #   content = Protobuf::Log::Content.new(:key => k, :value => v)
+        #   log.contents <<  content
+        # }
+        log = Protobuf::Log.new(:time => logitem[:timestamp], :contents => [])
+        
+        contents = logitem[:contents]
+        contents.each { |detail|
+          content = Protobuf::Log::Content.new(:key => detail[0], :value => detail[1])
           log.contents <<  content
         }
+        logGroup.logs << log
+         
       }
       body = logGroup.encode.to_s
       if body.length > 3 * 1024 * 1024
-        raise AliyunSls::PostBodyTooLarge, "content length is larger than 3MB"
+        raise AliyunSlsSdk::PostBodyTooLarge, "content length is larger than 3MB"
       end
       headers = {}
       headers['x-log-bodyrawsize'] = body.length.to_s
