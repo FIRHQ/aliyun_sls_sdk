@@ -3,39 +3,43 @@
 ## 阿里云SLS服务Ruby SDK
 
 
-#### 简单日志服务（`Simple Log Service，简称SLS`）
-是针对日志收集、存储和查询的平台化服务。服务提供各种类型日志的实时收集，平台化存储及实时查询海量的日志。并可以将日志归档至ODPS，以利用ODPS做大数据分析。除了通过管理控制台操作，SLS还提供了API（Application Programming Interface）方式写入、查询日志数据，管理自己的项目及日志库等。
-
-#### SLS(简单日志服务)[介绍](http://docs.aliyun.com/?spm=5176.730001.3.10.5GpxDL#/sls)
+https://cn.aliyun.com/product/sls
 
 ------------
 ## 库用法
 
 ### [查询Store清单](http://docs.aliyun.com/#/pub/sls/api/apilist&ListLogstores)
 
-    con = AliyunSls::Connection.new("project", "region", "access_key_secret", "aliyun_access_key")
-    con.list_logstores
+```
+endpoint = ''
+project = ''
+access_key_secret = ''
+aliyun_access_key = ''
+logstore = ''
+conn = AliyunSlsSdk::Client.new(endpoint, access_key_secret, aliyun_access_key)
+conn.get_logstore(project, logstore)
+```
 
 ### [上传日志](http://docs.aliyun.com/#/pub/sls/api/apilist&PutLogs)
+```
+endpoint = ''
+project = ''
+access_key_secret = ''
+aliyun_access_key = ''
+logstore = ''
+conn = AliyunSlsSdk::Client.new(endpoint, access_key_secret, aliyun_access_key)
 
-    log = AliyunSls::Protobuf::Log.new(:time => Time.now.to_i, :contents => [])
 
-    [
-        ['value1', '12'],
-        ['value2', '24'],
-        ['value3', '36'],
-        ['value4', '48']
-    ].each { |e|  
-        k = e[0]
-        v = e[1]
-        log_item = AliyunSls::Protobuf::Log::Content.new(:key => k, :value => v)
-        log.contents << log_item
-    }
-    log_list = AliyunSls::Protobuf::LogGroup.new(:logs => [])
-    log_list.logs << log
+topic=nil
+source=nil
+logitems = [{timestamp: Time.now.to_i, contents: [['aaa', '111'], ['ccc', 222]]}]
+hashKey = nil
+compress = false
 
-    con = AliyunSls::Connection.new("project", "region", "access_key_secret", "aliyun_access_key")
-    con.puts_logs("store", log_list)
+logs = AliyunSlsSdk::PutLogsRequest.new(project, logstore, topic, source, logitems, hashKey, compress)
+
+conn.put_logs(logs)
+```
 
 ### [列出日志主题](http://docs.aliyun.com/#/pub/sls/api/apilist&ListTopics)
 
@@ -95,7 +99,7 @@
 
 Add this line to your application's Gemfile:
 
-    gem 'aliyun_sls'
+    gem 'aliyun_sls_sdk'
 
 And then execute:
 
@@ -103,7 +107,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install aliyun_sls
+    $ gem install aliyun_sls_sdk
 
 ## Usage
 
