@@ -16,7 +16,7 @@ project = ''
 access_key_secret = ''
 aliyun_access_key = ''
 logstore = ''
-conn = AliyunSlsSdk::Client.new(endpoint, access_key_secret, aliyun_access_key)
+conn = AliyunSlsSdk::LogClient.new(endpoint, access_key_secret, aliyun_access_key)
 conn.get_logstore(project, logstore)
 ```
 
@@ -27,7 +27,7 @@ project = ''
 access_key_secret = ''
 aliyun_access_key = ''
 logstore = ''
-conn = AliyunSlsSdk::Client.new(endpoint, access_key_secret, aliyun_access_key)
+conn = AliyunSlsSdk::LogClient.new(endpoint, access_key_secret, aliyun_access_key)
 
 
 topic=nil
